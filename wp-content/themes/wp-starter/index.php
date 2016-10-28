@@ -4,7 +4,8 @@
 	<meta charset="UTF-8">
 	<title>Starter theme</title>
 </head>
-<body><h1>Welcome to the starter theme</h1>
+<body><h1><?php echo ot_get_option( 'sample_text' ); ?>
+</h1>
 	<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
 	tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
 	quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
