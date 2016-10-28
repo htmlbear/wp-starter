@@ -30,3 +30,12 @@ RewriteCond %{HTTP_REFERER} !^http://(www\.)?example\.com/.*$ [NC]
 RewriteRule .*\.(gif|jpg|png|ico)$ - [F,L]
 </ifModule>
 
+FileETag MTime Size
+<ifmodule mod_expires.c>
+<filesmatch "\.(jpg|gif|png|css|js)$">
+ExpiresActive on
+ExpiresDefault "access plus 1 year"
+</filesmatch>
+</ifmodule>
+
+

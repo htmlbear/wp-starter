@@ -3,6 +3,24 @@
 add_theme_support('post-thumbnails' );
 add_theme_support('menus' );
 add_theme_support('widgets' );
+ add_theme_support( 'post-formats',
+		array(
+			'aside',             // title less blurb
+			'gallery',           // gallery of images
+			'link',              // quick link to other site
+			'image',             // an image
+			'quote',             // a quick quote
+			'status',            // a Facebook like status update
+			'video',             // video
+			'audio',             // audio
+			'chat'               // chat transcript
+		)
+	); 
+
+
+register_nav_menus(array(
+	'main' => __( 'Main Nav','dpt' ),
+));
 
 // heartbeat control
 
@@ -122,3 +140,91 @@ function remove_dashboard_widgets() {
 }
 
 add_action('wp_dashboard_setup', 'remove_dashboard_widgets' );
+
+
+function ppm_quickstart_ie_compitable_elements(){
+    ?>
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <?php //var_dump(cs_get_option('favicon')); ?>
+    
+    <?php if(cs_get_option('favicon')) : ?>
+    <link rel="shortcut icon" type="image/png" href="<?php echo wp_get_attachment_image_src(cs_get_option('favicon'), 'thumbnail')[0]; ?>"/>
+    <?php endif; ?>
+    
+    <?php
+}
+add_action('wp_head', 'ppm_quickstart_ie_compitable_elements'); 
+
+include_once('inc/widgets.php');
+include_once('inc/shortcodes.php');
+include_once('inc/custom-posts.php');
+
+
+/************* CUSTOMIZE ADMIN *******************/
+// Custom Backend Footer
+function joints_custom_admin_footer() {
+	_e('<span id="footer-thankyou">Developed by <a href="http://htmlbear.ru/" target="_blank">HTMLBEAR</a></span>.', 'jointswp');
+}
+// adding it to the admin area
+add_filter('admin_footer_text', 'joints_custom_admin_footer');
+
+
+// REMOVE THE WORDPRESS UPDATE NOTIFICATION FOR ALL USERS EXCEPT SYSADMIN
+global $user_login;
+get_currentuserinfo();
+if (!current_user_can('update_plugins')) { // checks to see if current user can update plugins
+	add_action( 'init', create_function( '$a', "remove_action( 'init', 'wp_version_check' );" ), 2 );
+	add_filter( 'pre_option_update_core', create_function( '$a', "return null;" ) );
+}
+//Adds Attachment ID to Media Library admin columns
+add_filter('manage_media_columns', 'posts_columns_attachment_id', 1);
+add_action('manage_media_custom_column', 'posts_custom_columns_attachment_id', 1, 2);
+function posts_columns_attachment_id($defaults){
+    $defaults['wps_post_attachments_id'] = __('ID');
+    return $defaults;
+}
+function posts_custom_columns_attachment_id($column_name, $id){
+	if($column_name === 'wps_post_attachments_id'){
+	echo $id;
+    }
+}
+
+
+//Add Plugins link to Admin Bar
+function add_wpst_admin_bar_link($wp_admin_bar) {
+	if ( !is_super_admin() || !is_admin_bar_showing() )
+		return;
+	$wp_admin_bar->add_node( array(
+	'parent' => 'site-name',
+	'id' => 'ab-plugins',
+	'title' => 'Plugins',
+	'href' => admin_url('plugins.php')
+	) );
+}
+add_action('admin_bar_menu', 'add_wpst_admin_bar_link', 35);
+
+
+// function for inserting Google Analytics into the wp_footer
+add_action('wp_footer', 'ga');
+function ga() {
+	if ( !is_user_logged_in() ) { // not for logged in users ?>
+
+	<script type="text/javascript">
+		var _gaq = _gaq || [];
+	  	_gaq.push(['_setAccount', 'UA-XXXXXXXX']); // insert your Google Analytics id here
+	  	_gaq.push(['_trackPageview']);
+	  	_gaq.push(['_trackPageLoadTime']);
+	  	(function() {
+	    	var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    	ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	    	var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  	})();
+	</script>
+
+	<?php
+	}
+}
+
