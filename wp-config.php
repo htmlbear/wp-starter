@@ -77,7 +77,9 @@ $table_prefix  = 'wp_';
  * @link https://codex.wordpress.org/Debugging_in_WordPress
  */
 define('WP_DEBUG', false);
-
+define('WP_POST_REVISIONS', 5);
+define('AUTOSAVE_INTERVAL', 600);
+define( 'EMPTY_TRASH_DAYS', 3 );
 /* Это всё, дальше не редактируем. Успехов! */
 
 /** Абсолютный путь к директории WordPress. */
